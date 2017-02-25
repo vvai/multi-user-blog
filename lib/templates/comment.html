@@ -1,0 +1,17 @@
+<div class="comment">
+
+  <div class="comment__content">
+    {{c._render_text | safe}}
+  </div>
+
+  <div class="comment__date">
+    {{c.created.strftime("%b %d, %Y")}}
+  </div>
+
+  {% if c.user_id == user_id %}
+    <div class="comment__actions">
+      <a href="/blog/{{c.post_id}}/editcomment/{{c.key().id()}}">Edit</a>
+      <a href="/blog/{{c.post_id}}/deletecomment/{{c.key().id()}}">Delete</a>
+    </div>
+  {% endif %}
+</div>

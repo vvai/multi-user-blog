@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+  {{post.render() | safe}}
+
+  <h3>Comments:</h3>
+  {% for c in comments %}
+    {{ c.render(user_id) | safe }}
+  {% endfor %}
+
+  <div class="post-actions">
+    <span>{{likes_count}} likes</span>
+    {% if post.user_id != user_id %}
+      {% if like %}
+        <a href="/blog/{{post.key().id()}}/dislike/{{like.key().id()}}">Dislike</a>
+      {% else %}
+        <a href="/blog/{{post.key().id()}}/like">Like</a>
+      {% endif %}
+    {% endif %}
+    <a href="/blog/{{post.key().id()}}/newcomment">Add new comment</a>
+    <a href="/blog/editpost/{{post.key().id()}}">Edit</a>
+    <a href="/blog/deletepost/{{post.key().id()}}">Delete</a>
+  </div>
+
+  <h3 class="error">{{error}}</h3>
+
+{% endblock %}
