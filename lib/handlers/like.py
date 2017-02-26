@@ -10,18 +10,24 @@ class LikePost(BlogHandler):
     def get(self, post_id):
         """Like post request."""
         if not self.user:
-            self.redirect('/blog')
+            return self.redirect('/login')
 
         user_id = self.read_secure_cookie('user_id')
+        like = (
+                    Like.all()
+                    .filter('post_id =', post_id)
+                    .filter('user_id =', user_id)
+                    .fetch(1)
+                )
 
-        if post_id and user_id:
+        if post_id and user_id and not like:
             like = Like(parent=self.blog_key(),
                         user_id=user_id,
                         post_id=post_id)
             like.put()
-            self.redirect('/blog/%s' % str(post_id))
+            return self.redirect('/blog/%s' % str(post_id))
         else:
-            self.redirect('/blog')
+            return self.redirect('/blog')
 
 
 class DislikePost(BlogHandler):
@@ -36,6 +42,6 @@ class DislikePost(BlogHandler):
             like = db.get(key)
             if like:
                 like.delete()
-                self.redirect('/blog/%s' % str(post_id))
+                return self.redirect('/blog/%s' % str(post_id))
         else:
-            self.redirect('/blog')
+            return self.redirect('/login')

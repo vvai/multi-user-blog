@@ -12,12 +12,12 @@ class NewComment(BlogHandler):
         if self.user:
             self.render("newcomment.html")
         else:
-            self.redirect("/login")
+            return self.redirect("/login")
 
     def post(self, post_id):
         """Post request."""
         if not self.user:
-            self.redirect('/blog')
+            return self.redirect('/login')
 
         comment = self.request.get('comment')
         user_id = self.read_secure_cookie('user_id')
@@ -28,7 +28,7 @@ class NewComment(BlogHandler):
                         user_id=user_id,
                         post_id=post_id)
             c.put()
-            self.redirect('/blog/%s' % str(post_id))
+            return self.redirect('/blog/%s' % str(post_id))
         else:
             error = "write your comment, please!"
             self.render("newcomment.html",
@@ -59,15 +59,15 @@ class EditComment(BlogHandler):
                             comment_id=comment_id,
                             error="")
             else:
-                self.redirect('/blog/%s' % str(post_id))
+                return self.redirect('/blog/%s' % str(post_id))
 
         else:
-            self.redirect("/login")
+            return self.redirect("/login")
 
     def post(self, post_id, comment_id):
         """Edit comment request."""
         if not self.user:
-            self.redirect('/blog')
+            return self.redirect('/login')
 
         comment = self.request.get('comment')
 
@@ -79,9 +79,9 @@ class EditComment(BlogHandler):
         if comment:
             c.content = comment
             c.put()
-            self.redirect('/blog/%s' % str(post_id))
+            return self.redirect('/blog/%s' % str(post_id))
         else:
-            self.redirect('/blog/%s' % str(post_id))
+            return self.redirect('/blog/%s' % str(post_id))
 
 
 class DeleteComment(BlogHandler):
@@ -90,7 +90,7 @@ class DeleteComment(BlogHandler):
     def get(self, post_id, comment_id):
         """Delete comment request."""
         if not self.user:
-            self.redirect('/blog')
+            return self.redirect('/login')
 
         key = db.Key.from_path('Comment',
                                int(comment_id),
@@ -101,8 +101,8 @@ class DeleteComment(BlogHandler):
         if comment:
             if comment.user_id == user_id:
                 comment.delete()
-                self.redirect('/blog/%s' % str(post_id))
+                return self.redirect('/blog/%s' % str(post_id))
             else:
-                self.redirect('/blog/%s' % str(post_id))
+                return self.redirect('/blog/%s' % str(post_id))
         else:
-            self.redirect('/blog/%s' % str(post_id))
+            return self.redirect('/blog/%s' % str(post_id))

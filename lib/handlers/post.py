@@ -17,7 +17,7 @@ class PostPage(BlogHandler):
                                                                user_id)
         if not post:
             self.error(404)
-            return
+            return self.redirect('error.html')
 
         self.render("permalink.html",
                     post=post,
@@ -35,12 +35,12 @@ class NewPost(BlogHandler):
         if self.user:
             self.render("newpost.html")
         else:
-            self.redirect("/login")
+            return self.redirect("/login")
 
     def post(self):
         """Post request."""
         if not self.user:
-            self.redirect('/blog')
+            return self.redirect('/login')
 
         subject = self.request.get('subject')
         content = self.request.get('content')
@@ -53,7 +53,7 @@ class NewPost(BlogHandler):
                      user_id=user_id,
                      likes=0)
             p.put()
-            self.redirect('/blog/%s' % str(p.key().id()))
+            return self.redirect('/blog/%s' % str(p.key().id()))
         else:
             error = "subject and content, please!"
             self.render("newpost.html",
@@ -92,12 +92,12 @@ class EditPost(BlogHandler):
                             error=error)
 
         else:
-            self.redirect("/login")
+            return self.redirect("/login")
 
     def post(self, post_id):
         """Edit post request."""
         if not self.user:
-            self.redirect('/blog')
+            return self.redirect('/login')
 
         subject = self.request.get('subject')
         content = self.request.get('content')
@@ -109,7 +109,7 @@ class EditPost(BlogHandler):
             post.subject = subject
             post.content = content
             post.put()
-            self.redirect('/blog/%s' % str(post.key().id()))
+            return self.redirect('/blog/%s' % str(post.key().id()))
         else:
             error = "subject and content, please!"
             self.render("newpost.html",
@@ -124,7 +124,7 @@ class DeletePost(BlogHandler):
     def get(self, post_id):
         """Delete post request."""
         if not self.user:
-            self.redirect('/blog')
+            self.redirect('/login')
 
         user_id = self.read_secure_cookie('user_id')
         post, comments, like, likes_count = getPostInformation(self.blog_key(),
@@ -145,7 +145,7 @@ class DeletePost(BlogHandler):
                             error=error)
         else:
             # error = "this is not yours post"
-            self.redirect('/blog/%s' % str(post.key().id()))
+            return self.redirect('/blog/%s' % str(post.key().id()))
 
 
 def getPostInformation(blog_key, post_id, user_id):

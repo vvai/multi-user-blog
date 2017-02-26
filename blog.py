@@ -24,7 +24,7 @@ class MainPage(BlogHandler):
         self.write('Hello, Udacity!')
 
 
-app = webapp2.WSGIApplication([('/', MainPage),
+app = webapp2.WSGIApplication([('/', BlogFront),
                                ('/unit2/rot13', Rot13),
                                ('/unit2/signup', Unit2Signup),
                                ('/unit2/welcome', Welcome),
