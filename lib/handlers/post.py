@@ -102,9 +102,12 @@ class EditPost(BlogHandler):
         subject = self.request.get('subject')
         content = self.request.get('content')
 
+        user_id = self.read_secure_cookie('user_id')
         key = db.Key.from_path('Post', int(post_id), parent=self.blog_key())
         post = db.get(key)
 
+        if post.user_id != user_id:
+            return self.redirect('/login')
         if subject and content and post:
             post.subject = subject
             post.content = content

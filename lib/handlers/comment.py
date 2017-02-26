@@ -70,12 +70,14 @@ class EditComment(BlogHandler):
             return self.redirect('/login')
 
         comment = self.request.get('comment')
+        user_id = self.read_secure_cookie('user_id')
 
         key = db.Key.from_path('Comment',
                                int(comment_id),
                                parent=self.blog_key())
         c = db.get(key)
-
+        if c.user_id != user_id:
+            return self.redirect("/login")
         if comment:
             c.content = comment
             c.put()
